@@ -32,7 +32,7 @@ index = VectorstoreIndexCreator()
 # Get Tools
 googleSearch = GoogleSearchAPIWrapper()
 googleSerp = GoogleSerperAPIWrapper()
-arxiv = ArxivAPIWrapper()
+# arxiv = ArxivAPIWrapper()
 wolfram = WolframAlphaAPIWrapper()
 
 
@@ -191,7 +191,8 @@ def create_blog_post(summaries, urls):
         Please follow all of the following rules:
         - Craft an entirely original, imaginative, and conversational-style, persuasive tone 
         article
-        - Provide detailed, user engaging content and long-form content, enough to be informative.
+        - Provide highly detailed, user engaging content and long-form content, 
+          enough to be informative.
         - Provide a clear and concise introduction, body, and conclusion.
         - Provide user with actionable advice and insights.
         - Provide a focus keyphrase, 
