@@ -21,7 +21,7 @@ from langchain.document_loaders import UnstructuredURLLoader, UnstructuredHTMLLo
 
 load_dotenv()
 
-st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer:",
+st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer: v1.0.0",
                    page_icon=":computer:")
 
 st.header('Blog Post Generator :moneybag: :bulb: :computer:')
@@ -185,32 +185,29 @@ def summarize(data):
 # 5/ Create a blog post or article
 def create_blog_post(summaries, urls):
     template = """
-        {summaries}
-        You are a nicheGPT your job is to create a blog / article, based on the following rules,
+    {summaries}
+    You are a world-class AI language model and your task is to create a highly detailed and informative blog 
+    post/article based on the following rules:
 
-        Please follow all of the following rules:
-        - Craft an entirely original, imaginative, and conversational-style, persuasive tone 
-        article
-        - Provide highly detailed, user engaging content and long-form content, 
-          enough to be informative.
-        - Provide a clear and concise introduction, body, and conclusion.
-        - Provide user with actionable advice and insights.
-        - Provide a focus keyphrase, 
-        - Include dates and timeframes wherever relevant.
-        - Include contractions, idioms, transition words, interjections, dangling modifiers, 
-           and colloquial language, while steering clear of redundancy and awkward phrasing.
-        - The piece should feature a main SEO meta-title no more than 60 characters
-        - Meta-description no more than 160 characters, slug, and excerpt in the introduction.
-        - Incorporate bulleted or numbered lists as necessary.
-        - Address FAQs and a wrap-up section, using synonyms for the term "conclusion."
-        - Fact check your information by inserting citations and the links {urls} to the information to support your 
-           statements.
-        - Remember to use question marks for questions.
-        - Avoid altering the original keyword or title when crafting the title.
-        - Include the keyphrase or title 2-3 times within the text, and incorporate it into 
-          headings too.
-
-        """
+    1. Craft an entirely original, imaginative, and conversational-style blog post with a persuasive tone.
+    2. Provide a focus keyphrase that encapsulates the main theme of the blog post.
+    3. Incorporate contractions, idioms, transition words, interjections, dangling modifiers, and colloquial 
+       language to make the post engaging and relatable.
+    4. Avoid redundancy and awkward phrasing.
+    5. The piece should feature a main SEO meta-title, an inventive sub-title, meta-description (max 160 characters), 
+       slug, and an engaging introduction that includes an excerpt.
+    6. Incorporate bulleted or numbered lists, infographics, statistics, or data visualization as necessary.
+    7. Address FAQs related to the topic and include a wrap-up section, using synonyms for the term "conclusion."
+    8. Fact check your information by inserting citations and the links {urls} to the information to support your statements. The blog post should have a minimum of 3 reliable references.
+    9. Ensure to use question marks for questions and proper punctuation throughout the blog post.
+    10. Avoid altering the original keyword or title when crafting the title.
+    11. Include dates and timeframes relevant to the topic.
+    12. Use the keyphrase or title 2-3 times within the text, and incorporate it into headings too.
+    13. The blog post should be broken down into at least 5 subheadings to structure the information effectively.
+    14. The blog post should have a length of atleast 800 words and maximum of 3000 words to provide 
+        comprehensive information on the topic.
+    15. Lastly, incorporate a call-to-action at the end of the blog post to engage readers.
+    """
 
     prompt_template = PromptTemplate(
         input_variables=["summaries", "urls"], template=template)
@@ -240,33 +237,38 @@ if query:
     print(colored("Step 1/ Search the web for articles/blogs related to the input", 'blue'))
     res_data = serp_search(query)
 
-    with st.expander("1/ Find Relevant Articles"):
-        st.info(res_data)
+    if res_data:
+        with st.expander("1/ Find Relevant Articles"):
+            st.info(res_data)
 
     # Step 2/
     print(colored("Step 2/ Given the search results, find the best articles URL's", "blue"))
     urls = find_best_article_urls(res_data, query)
 
-    with st.expander("2/ Extract Articles URL's"):
-        st.info(urls)
+    if urls:
+        with st.expander("2/ Extract Articles URL's"):
+            st.info(urls)
 
     # Step 3/
     print(colored("Step 3/ Get Page Data from URL's", "blue"))
     data = get_page_data_from_urls(urls)
 
-    with st.expander("3/ Extracted Data from URL's"):
-        st.info(data)
+    if data:
+        with st.expander("3/ Extracted Data from URL's"):
+            st.info(data)
 
     # Step 4/
     print(colored("Step 4/ Summarize the data", "blue"))
     summaries = summarize(data)
 
-    with st.expander("4/ Summarize the Extracted Data"):
-        st.info(summaries)
+    if summaries:
+        with st.expander("4/ Summarize the Extracted Data"):
+            st.info(summaries)
 
     # Step 5/
     print(colored("Step 5/ Create a blog post or article", "blue"))
     blog_post = create_blog_post(summaries, urls)
 
-    with st.expander("5/ Final Blog Post"):
-        st.info(blog_post)
+    if blog_post:
+        with st.expander("5/ Final Blog Post"):
+            st.info(blog_post)
