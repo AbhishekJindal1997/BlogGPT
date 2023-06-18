@@ -21,10 +21,10 @@ from langchain.document_loaders import UnstructuredURLLoader, UnstructuredHTMLLo
 
 load_dotenv()
 
-st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer: v1.0.0",
+st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer: ",
                    page_icon=":computer:")
 
-st.header('Blog Post Generator :moneybag: :bulb: :computer:')
+st.header('Blog Post Generator :moneybag: :bulb: :computer:    v1.0')
 
 # Vector Store
 index = VectorstoreIndexCreator()
@@ -95,7 +95,7 @@ def find_best_article_urls(res_data, query):
     relevant articles for certain topics: 
     {res_str}
     Above is the list of search results for the query: {query}
-    Please choose the best 7 articles from the list above, return only an array of url's, 
+    Please choose the best 5 articles from the list above, return only an array of url's, 
     do not include anything else: return ONLY an array of url's, nothing else.
     """
 
@@ -197,7 +197,7 @@ def create_blog_post(summaries, urls):
     5. The piece should feature a main SEO meta-title, an inventive sub-title, meta-description (max 160 characters), 
        slug, and an engaging introduction that includes an excerpt.
     6. Incorporate bulleted or numbered lists, infographics, statistics, or data visualization as necessary.
-    7. Address FAQs related to the topic and include a wrap-up section, using synonyms for the term "conclusion."
+    7. Address FAQs related to the topic include a wrap-up section, using synonyms for the term "conclusion."
     8. Fact check your information by inserting citations and the links {urls} to the information to support your statements. The blog post should have a minimum of 3 reliable references.
     9. Ensure to use question marks for questions and proper punctuation throughout the blog post.
     10. Avoid altering the original keyword or title when crafting the title.
@@ -239,7 +239,7 @@ if query:
 
     if res_data:
         with st.expander("1/ Find Relevant Articles"):
-            st.info(res_data)
+            st.write(res_data)
 
     # Step 2/
     print(colored("Step 2/ Given the search results, find the best articles URL's", "blue"))
@@ -263,7 +263,7 @@ if query:
 
     if summaries:
         with st.expander("4/ Summarize the Extracted Data"):
-            st.info(summaries)
+            st.json(summaries)
 
     # Step 5/
     print(colored("Step 5/ Create a blog post or article", "blue"))
