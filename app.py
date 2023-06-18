@@ -186,14 +186,16 @@ def summarize(data):
 def create_blog_post(summaries, urls):
     template = """
         {summaries}
-        You are a nicheGPT your job is to create a blog / article, you are extremely good at 
-        writing, you are a world class writer, you are a world class journalist.
+        You are a nicheGPT your job is to create a blog / article, based on the following rules,
 
         Please follow all of the following rules:
         - Craft an entirely original, imaginative, and conversational-style, persuasive tone 
         article
+        - Provide detailed, user engaging content and long-form content, enough to be informative.
+        - Provide a clear and concise introduction, body, and conclusion.
+        - Provide user with actionable advice and insights.
         - Provide a focus keyphrase, 
-        - Include dates and timeframes as much as possible
+        - Include dates and timeframes wherever relevant.
         - Include contractions, idioms, transition words, interjections, dangling modifiers, 
            and colloquial language, while steering clear of redundancy and awkward phrasing.
         - The piece should feature a main SEO meta-title no more than 60 characters
