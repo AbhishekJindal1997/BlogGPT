@@ -114,7 +114,6 @@ def find_best_article_urls(res_data, query):
     return url_list
 
 
-# TODO: Find a better alternative, some tool or agent that can perform this action better
 # 3/ Get Page Data from UR's
 def get_page_data_from_urls(urls):
 
@@ -183,12 +182,12 @@ def summarize(data):
     return summaries
 
 
-# TODO: Write better prompt specific for a news journalist. include time frames, etc and other lots of things
 # 5/ Create a blog post or article
-def create_blog_post(summaries, urls, query):
+def create_blog_post(summaries, urls):
     template = """
-        You are a nicheGPT your job is to create a blog / article based on the user input 
-        {query}, and data: {summaries}
+        {summaries}
+        You are a nicheGPT your job is to create a blog / article, you are extremely good at 
+        writing, you are a world class writer, you are a world class journalist.
 
         Please follow all of the following rules:
         - Craft an entirely original, imaginative, and conversational-style, persuasive tone 
@@ -211,13 +210,13 @@ def create_blog_post(summaries, urls, query):
         """
 
     prompt_template = PromptTemplate(
-        input_variables=["summaries", "urls", "query"], template=template)
+        input_variables=["summaries", "urls"], template=template)
 
     create_blog_chain = LLMChain(
         llm=llm, prompt=prompt_template, verbose=False)
 
     blog_post = create_blog_chain.predict(
-        summaries=summaries, urls=urls, query=query)
+        summaries=summaries, urls=urls)
 
     # Save the data to a single markdown file
     filename = 'Blog' + '.md'
@@ -226,6 +225,7 @@ def create_blog_post(summaries, urls, query):
 
     # print(blog_post)
     print(colored('Blog Post Created Successfully', 'green'))
+    return blog_post
 
 
 # START
@@ -251,7 +251,7 @@ if query:
     print(colored("Step 3/ Get Page Data from URL's", "blue"))
     data = get_page_data_from_urls(urls)
 
-    with st.expander("3/ Extracted Data"):
+    with st.expander("3/ Extracted Data from URL's"):
         st.info(data)
 
     # Step 4/
@@ -263,7 +263,7 @@ if query:
 
     # Step 5/
     print(colored("Step 5/ Create a blog post or article", "blue"))
-    blog_post = create_blog_post(summaries, urls, query)
+    blog_post = create_blog_post(summaries, urls)
 
     with st.expander("5/ Final Blog Post"):
         st.info(blog_post)
