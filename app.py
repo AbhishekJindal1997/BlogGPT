@@ -139,6 +139,7 @@ def get_page_data_from_urls(urls):
     return data
 
 
+# ! Increase the speed of this function, it is very slow
 # 4/ Summarize the data into a blog or article
 def summarize(data):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -190,8 +191,8 @@ def create_blog_post(summaries, urls):
     blog post / article including timframes of the incidents , based on the following rules and use all the  
     relevant information from the summaries.
 
-    Format the blog by providing 2 lines gap between each section/paragrpah. Headings should be bolded
-    and in new line.
+    Format the blog by providing 2 lines gap between each section/paragrpah. All the Headings should be bold and 
+    in new line.
 
     Please follow all of the following rules:
     1. Craft an entirely new original, imaginative, and conversational-style blog post with a persuasive tone.
@@ -203,7 +204,7 @@ def create_blog_post(summaries, urls):
     6. Include maximum of 3 FAQ's related to the topic.
     7. Add a fact check / references paragrpah using the following urls as soruces {urls}, provide url links to the
        users.
-    8. Provide with a focus keyphrase , and incorporate it into headings too.
+    8. Provide with a focus keyphrase , and incorporate it into headings too. Bold the headings
     9. The blog post should be broken down into at least 5 headings to structure the information effectively.
     10. The blog post should have a length of atleast 800 words and maximum of 3000 words to provide 
         comprehensive information on the topic. Provide number of words at the end of the blog post.
@@ -229,46 +230,55 @@ def create_blog_post(summaries, urls):
 
 
 # START
-query = st.text_input("Enter a Blog Topic: ")
+query = st.sidebar.text_input("Enter a Blog Topic: ")
 
 if query:
+    # Progress bar
+    progress = st.progress(0)
+    progress.text("Starting...")
 
-   # Step 1/
+    # Step 1/
+    progress.text("Step 1/ Search the web for articles/blogs related to the input is in progress ⏳")
     print(colored("Step 1/ Search the web for articles/blogs related to the input", 'blue'))
     res_data = serp_search(query)
-
     if res_data:
-        with st.expander("1/ Find Relevant Articles"):
-            st.write(res_data)
+        st.sidebar.markdown("1/ Find Relevant Articles ✅")
+        progress.text("Step 1 completed...")
+        progress.progress(20)
 
     # Step 2/
+    progress.text("Step 2/ Given the search results, find the best articles URL's is in progress ⏳")
     print(colored("Step 2/ Given the search results, find the best articles URL's", "blue"))
     urls = find_best_article_urls(res_data, query)
-
     if urls:
-        with st.expander("2/ Extract Articles URL's"):
-            st.write(urls)
+        st.sidebar.markdown("2/ Extract Articles URL's ✅")
+        progress.text("Step 2 completed...")
+        progress.progress(40)
 
     # Step 3/
+    progress.text("Step 3/ Extracted Data from URL's is in progress ⏳")
     print(colored("Step 3/ Get Page Data from URL's", "blue"))
     data = get_page_data_from_urls(urls)
-
     if data:
-        with st.expander("3/ Extracted Data from URL's"):
-            st.json(data)
+        st.sidebar.markdown("3/ Extracted Data from URL's ✅")
+        progress.text("Step 3 completed...")
+        progress.progress(60)
 
     # Step 4/
+    progress.text("Step 4/ Summarize the Extracted Data is in progress ⏳")
     print(colored("Step 4/ Summarize the data", "blue"))
     summaries = summarize(data)
-
     if summaries:
-        with st.expander("4/ Summarize the Extracted Data"):
-            st.json(summaries)
+        st.sidebar.markdown("4/ Summarize the Extracted Data ✅")
+        progress.text("Step 4 completed...")
+        progress.progress(80)
 
     # Step 5/
+    progress.text("Step 5/ Creating the Final Blog Post, Please Wait... ⏳")
     print(colored("Step 5/ Create a blog post or article", "blue"))
     blog_post = create_blog_post(summaries, urls)
-
     if blog_post:
-        with st.expander("5/ Final Blog Post"):
-            st.write(blog_post)
+        st.sidebar.markdown("5/ Final Blog Post ✅")
+        st.markdown(f"\n{blog_post}")
+        progress.text("Step 5 completed...")
+        progress.progress(100)
