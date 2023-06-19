@@ -186,27 +186,27 @@ def summarize(data):
 def create_blog_post(summaries, urls):
     template = """
     {summaries}
-    You are a world-class AI language model and your task is to create a highly detailed and informative blog 
-    post/article based on the following rules:
+    You are a world-class AI language model and your task is to create a highly detailed and informative 
+    blog post / article including timframes of the incidents , based on the following rules and use all the  
+    relevant information from the summaries.
 
-    1. Craft an entirely original, imaginative, and conversational-style blog post with a persuasive tone.
-    2. Provide a focus keyphrase that encapsulates the main theme of the blog post.
-    3. Incorporate contractions, idioms, transition words, interjections, dangling modifiers, and colloquial 
+    Format the blog by providing 2 lines gap between each section/paragrpah. Headings should be bolded
+    and in new line.
+
+    Please follow all of the following rules:
+    1. Craft an entirely new original, imaginative, and conversational-style blog post with a persuasive tone.
+    2. Incorporate contractions, idioms, transition words, interjections, dangling modifiers, and colloquial 
        language to make the post engaging and relatable.
-    4. Avoid redundancy and awkward phrasing.
-    5. The piece should feature a main SEO meta-title, an inventive sub-title, meta-description (max 160 characters), 
-       slug, and an engaging introduction that includes an excerpt.
-    6. Incorporate bulleted or numbered lists, infographics, statistics, or data visualization as necessary.
-    7. Address FAQs related to the topic include a wrap-up section, using synonyms for the term "conclusion."
-    8. Fact check your information by inserting citations and the links {urls} to the information to support your statements. The blog post should have a minimum of 3 reliable references.
-    9. Ensure to use question marks for questions and proper punctuation throughout the blog post.
-    10. Avoid altering the original keyword or title when crafting the title.
-    11. Include dates and timeframes relevant to the topic.
-    12. Use the keyphrase or title 2-3 times within the text, and incorporate it into headings too.
-    13. The blog post should be broken down into at least 5 subheadings to structure the information effectively.
-    14. The blog post should have a length of atleast 800 words and maximum of 3000 words to provide 
-        comprehensive information on the topic.
-    15. Lastly, incorporate a call-to-action at the end of the blog post to engage readers.
+    3. Include as much timeframes and dates as possible to make the post more informative.
+    4. The piece should feature a main SEO meta-title, meta-description (max 160 characters) and an engaging introduction.
+    5. Include a wrap-up section, using synonyms for the term "conclusion.".
+    6. Include maximum of 3 FAQ's related to the topic.
+    7. Add a fact check / references paragrpah using the following urls as soruces {urls}, provide url links to the
+       users.
+    8. Provide with a focus keyphrase , and incorporate it into headings too.
+    9. The blog post should be broken down into at least 5 headings to structure the information effectively.
+    10. The blog post should have a length of atleast 800 words and maximum of 3000 words to provide 
+        comprehensive information on the topic. Provide number of words at the end of the blog post.
     """
 
     prompt_template = PromptTemplate(
@@ -233,7 +233,7 @@ query = st.text_input("Enter a Blog Topic: ")
 
 if query:
 
-    # Step 1/
+   # Step 1/
     print(colored("Step 1/ Search the web for articles/blogs related to the input", 'blue'))
     res_data = serp_search(query)
 
@@ -247,7 +247,7 @@ if query:
 
     if urls:
         with st.expander("2/ Extract Articles URL's"):
-            st.info(urls)
+            st.write(urls)
 
     # Step 3/
     print(colored("Step 3/ Get Page Data from URL's", "blue"))
@@ -255,7 +255,7 @@ if query:
 
     if data:
         with st.expander("3/ Extracted Data from URL's"):
-            st.info(data)
+            st.json(data)
 
     # Step 4/
     print(colored("Step 4/ Summarize the data", "blue"))
@@ -271,4 +271,4 @@ if query:
 
     if blog_post:
         with st.expander("5/ Final Blog Post"):
-            st.info(blog_post)
+            st.write(blog_post)
