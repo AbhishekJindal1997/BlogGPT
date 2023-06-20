@@ -26,7 +26,7 @@ load_dotenv()
 st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer: ",
                    page_icon=":computer:")
 
-st.header('Blog Post Generator :moneybag: :bulb: :computer:    v1.0')
+st.header('Blog Post Generator :moneybag: :bulb: :computer:    v1.1.0')
 
 # Vector Store
 index = VectorstoreIndexCreator()
@@ -160,9 +160,12 @@ def summarize(data):
 
     summaries = []
 
+    # Synchronous Processing: This involves processing one chunk at a time.
     # for chunk in enumerate(text):
     #     summary = summarizer_chain.predict(text=chunk)
     #     summaries.append(summary)
+
+    # Asynchronous Processing: This involves processing multiple chunks at the same time.
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [executor.submit(summarizer_chain.predict, text=chunk) for chunk in text]
         for future in concurrent.futures.as_completed(futures):
