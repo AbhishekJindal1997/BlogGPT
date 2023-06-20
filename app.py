@@ -144,8 +144,8 @@ def get_page_data_from_urls(urls):
 # 4/ Summarize the data into a blog or article
 def summarize(data):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=15000,
-        chunk_overlap=100,
+        chunk_size=11000,
+        chunk_overlap=200,
         length_function=len)
     text = text_splitter.create_documents(data)
 
