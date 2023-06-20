@@ -17,6 +17,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from langchain.document_loaders import UnstructuredURLLoader, UnstructuredHTMLLoader
+from langchain.text_splitter import TokenTextSplitter
 
 
 load_dotenv()
@@ -143,14 +144,25 @@ def get_page_data_from_urls(urls):
 # 4/ Summarize the data into a blog or article
 def summarize(data):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=8000,
-        chunk_overlap=200,
+        chunk_size=15000,
+        chunk_overlap=100,
         length_function=len)
     text = text_splitter.create_documents(data)
 
+    # text_splitter = TokenTextSplitter(chunk_size=15000, chunk_overlap=0)
+    # # Initialize an empty list to hold all the split texts
+    # all_texts = []
+    
+    #   # Loop through each element in the data list
+    # for data_str in data:
+    #     split_text = text_splitter.split_text(data_str)
+    #     all_texts.extend(split_text)
+    
+    # text = ' '.join(all_texts)
+
     template = """
     {text}
-    You are a world class journalist, You will try to summarize the text within 1000 words
+    You are a world class journalist, You will try to summarize the text.
 
     Please follow all of the following rules:
     
@@ -238,7 +250,7 @@ if query:
     progress.text("Starting...")
 
     # Step 1/
-    progress.text("Step 1/ Search the web for articles/blogs related to the input is in progress ⏳")
+    progress.text("Step 1/ Search the web for articles/blogs related to the input, In progress ⏳")
     print(colored("Step 1/ Search the web for articles/blogs related to the input", 'blue'))
     res_data = serp_search(query)
     if res_data:
@@ -247,7 +259,7 @@ if query:
         progress.progress(20)
 
     # Step 2/
-    progress.text("Step 2/ Given the search results, find the best articles URL's is in progress ⏳")
+    progress.text("Step 2/ Finding the best articles URL's, In progress ⏳")
     print(colored("Step 2/ Given the search results, find the best articles URL's", "blue"))
     urls = find_best_article_urls(res_data, query)
     if urls:
@@ -256,7 +268,7 @@ if query:
         progress.progress(40)
 
     # Step 3/
-    progress.text("Step 3/ Extracted Data from URL's is in progress ⏳")
+    progress.text("Step 3/ Extracting Data from URL's, In progress ⏳")
     print(colored("Step 3/ Get Page Data from URL's", "blue"))
     data = get_page_data_from_urls(urls)
     if data:
@@ -265,7 +277,7 @@ if query:
         progress.progress(60)
 
     # Step 4/
-    progress.text("Step 4/ Summarize the Extracted Data is in progress ⏳")
+    progress.text("Step 4/ Summarizing the Extracted Data, In progress ⏳")
     print(colored("Step 4/ Summarize the data", "blue"))
     summaries = summarize(data)
     if summaries:
