@@ -7,6 +7,7 @@ import json
 import http.client
 from bs4 import BeautifulSoup
 from termcolor import colored
+import concurrent.futures
 from langchain import OpenAI, LLMChain, PromptTemplate
 from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser, ZeroShotAgent
 from langchain.utilities import GoogleSearchAPIWrapper, GoogleSerperAPIWrapper, ApifyWrapper, ArxivAPIWrapper
@@ -139,40 +140,17 @@ def get_page_data_from_urls(urls):
     # print(colored(data, "green"))
     return data
 
-
-# ! Increase the speed of this function, it is very slow
 # 4/ Summarize the data into a blog or article
 def summarize(data):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=11000,
         chunk_overlap=200,
         length_function=len)
+    
     text = text_splitter.create_documents(data)
 
-    # text_splitter = TokenTextSplitter(chunk_size=15000, chunk_overlap=0)
-    # # Initialize an empty list to hold all the split texts
-    # all_texts = []
-    
-    #   # Loop through each element in the data list
-    # for data_str in data:
-    #     split_text = text_splitter.split_text(data_str)
-    #     all_texts.extend(split_text)
-    
-    # text = ' '.join(all_texts)
-
     template = """
-    {text}
-    You are a world class journalist, You will try to summarize the text.
-
-    Please follow all of the following rules:
-    
-    1/ Make sure the content is engaging, infromative with good data
-    2/ Make sure the content is original and not plagiarized
-    4/ Make sure the content is not too short, keep it long enough to be informative
-    5/ Make sure the content is not too boring, keep it interesting and engaging
-    6/ The content need to give audience actionable adive and insights too
-
-    
+    summarize the text: {text}
     """
 
     prompt_template = PromptTemplate(
@@ -182,9 +160,14 @@ def summarize(data):
 
     summaries = []
 
-    for chunk in enumerate(text):
-        summary = summarizer_chain.predict(text=chunk)
-        summaries.append(summary)
+    # for chunk in enumerate(text):
+    #     summary = summarizer_chain.predict(text=chunk)
+    #     summaries.append(summary)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(summarizer_chain.predict, text=chunk) for chunk in text]
+        for future in concurrent.futures.as_completed(futures):
+            summaries.append(future.result())
+
 
     print(colored('Data Summarized successfully', 'green'))
 
