@@ -23,10 +23,10 @@ from langchain.text_splitter import TokenTextSplitter
 
 load_dotenv()
 
-st.set_page_config(page_title="Blog Post Generator :moneybag: :bulb: :computer: ",
+st.set_page_config(page_title="News Article Generator :moneybag: :bulb: :computer: ",
                    page_icon=":computer:")
 
-st.header('Blog Post Generator :moneybag: :bulb: :computer:    v1.1.0')
+st.header('News Article Generator :newspaper: :bulb: :computer: v2.0.0')
 
 # Vector Store
 index = VectorstoreIndexCreator()
@@ -87,7 +87,7 @@ def serp_search(query):
     return res_data.decode("utf-8")
 
 
-# 2/ Given the search results, find the best 5 articles URL's
+# 2/ Given the search results, find the best n articles URL's
 def find_best_article_urls(res_data, query):
 
     res_str = json.dumps(res_data)
@@ -97,7 +97,7 @@ def find_best_article_urls(res_data, query):
     relevant articles for certain topics: 
     {res_str}
     Above is the list of search results for the query: {query}
-    Please choose the best 5 articles from the list above, return only an array of url's, 
+    Please choose the best 8 articles from the list above, return only an array of url's, 
     do not include anything else: return ONLY an array of url's, nothing else.
     """
 
@@ -143,14 +143,24 @@ def get_page_data_from_urls(urls):
 # 4/ Summarize the data into a blog or article
 def summarize(data):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=11000,
+        chunk_size=10000,
         chunk_overlap=200,
         length_function=len)
     
     text = text_splitter.create_documents(data)
 
+    
     template = """
-    summarize the text: {text}
+        {text}
+        You are a world class journalist, You will try to summarize the text.
+
+        Please follow all of the following rules:
+
+        1/ Make sure the content is engaging, infromative with good data
+        2/ Make sure the content is original and not plagiarized
+        4/ Make sure the content is not too short, keep it long enough to be informative
+        5/ Make sure the content is not too boring, keep it interesting and engaging
+        6/ The content need to give audience actionable adive and insights too
     """
 
     prompt_template = PromptTemplate(
@@ -161,15 +171,15 @@ def summarize(data):
     summaries = []
 
     # Synchronous Processing: This involves processing one chunk at a time.
-    # for chunk in enumerate(text):
-    #     summary = summarizer_chain.predict(text=chunk)
-    #     summaries.append(summary)
+    for chunk in enumerate(text):
+        summary = summarizer_chain.predict(text=chunk)
+        summaries.append(summary)
 
     # Asynchronous Processing: This involves processing multiple chunks at the same time.
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(summarizer_chain.predict, text=chunk) for chunk in text]
-        for future in concurrent.futures.as_completed(futures):
-            summaries.append(future.result())
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     futures = [executor.submit(summarizer_chain.predict, text=chunk) for chunk in text]
+    #     for future in concurrent.futures.as_completed(futures):
+    #         summaries.append(future.result())
 
 
     print(colored('Data Summarized successfully', 'green'))
@@ -181,31 +191,32 @@ def summarize(data):
     return summaries
 
 
+
 # 5/ Create a blog post or article
 def create_blog_post(summaries, urls):
     template = """
     {summaries}
-    You are a world-class AI language model and your task is to create a highly detailed and informative 
-    blog post / article including timframes of the incidents , based on the following rules and use all the  
-    relevant information from the summaries.
+    You are a world-class news journalist and your task is to create a highly detailed and informative news article, 
+    incorporating specific timeframes of the incidents.
 
-    Format the blog by providing 2 lines gap between each section/paragrpah. All the Headings should be bold and 
-    in new line.
+    Use all the relevant information from the summaries and follow the guidelines below:
 
-    Please follow all of the following rules:
-    1. Craft an entirely new original, imaginative, and conversational-style blog post with a persuasive tone.
-    2. Incorporate contractions, idioms, transition words, interjections, dangling modifiers, and colloquial 
-       language to make the post engaging and relatable.
-    3. Include as much timeframes and dates as possible to make the post more informative.
-    4. The piece should feature a main SEO meta-title, meta-description (max 160 characters) and an engaging introduction.
-    5. Include a wrap-up section, using synonyms for the term "conclusion.".
-    6. Include maximum of 3 FAQ's related to the topic.
-    7. Add a fact check / references paragrpah using the following urls as soruces {urls}, provide url links to the
-       users.
-    8. Provide with a focus keyphrase , and incorporate it into headings too. Bold the headings
-    9. The blog post should be broken down into at least 5 headings to structure the information effectively.
-    10. The blog post should have a length of atleast 800 words and maximum of 3000 words to provide 
-        comprehensive information on the topic. Provide number of words at the end of the blog post.
+    1/ Your primary objective is to compose an extensive news report, maintaining a formal and unbiased tone throughout
+      the article.
+    2/ Be sure to use transition words to enhance the flow and coherence of the text
+    3/ The article should exceed 1,000 words to provide a thorough analysis of the subject. 
+    4/ Create a succinct and engaging headline for the article, along with a subheadline that effectively 
+       summarizes the key points of the story
+    5/ The piece should feature an engaging introduction.
+    6/ Craft a concise meta description maximum of 160 characters, which succinctly encapsulates the essence of the article.
+    7/ Add a fact check / references paragrpah using the following urls as soruces {urls}, provide url links to the users.
+    8/ Include relevant date and timeframes of the incident, wherever relevant to make the article more informative.
+    9/ Provide a focus keyphrase for the article, which should be used in the first paragraph of 
+       the article, in meta description, and in the headline.
+
+    Your writing should guide the reader through the incident, explaining each element clearly and engagingly, also utlize
+    date and timeframes to make the article more informative. Remember, your role as a journalist is to make even complex
+    situations easily understandable to your audience.
     """
 
     prompt_template = PromptTemplate(
